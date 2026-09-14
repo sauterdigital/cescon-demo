@@ -210,3 +210,4 @@ credentials*.json
 *.tfstate
 *.tfstate.backup
 .terraform/
+artifacts/
