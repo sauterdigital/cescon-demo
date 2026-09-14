@@ -105,6 +105,14 @@ resource "google_cloudbuild_trigger" "deploy_to_prod_pipeline" {
   description     = "Trigger for deployment to production"
   service_account = resource.google_service_account.cicd_runner_sa.id
 
+  github {
+    owner = var.repository_owner
+    name  = var.repository_name
+    push {
+      branch = "^__manual-prod-deploy-only__$"
+    }
+  }
+
   filename            = ".cloudbuild/deploy-to-prod.yaml"
   approval_config {
     approval_required = true
