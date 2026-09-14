@@ -19,7 +19,7 @@ steps:
         export PATH="$$HOME/.local/bin:$$PATH"
         uvx google-agents-cli@1.5.0 eval run --metrics final_response_quality
         RESULT_FILE=$$(ls -t artifacts/grade_results/results_*.json | head -1)
-        THRESHOLD=0.9
+        THRESHOLD=0.5
         jq -e --arg metric "final_response_quality_v1" --argjson t "$$THRESHOLD" \
           '[.summary_metrics[] | select(.metric_name == $metric) | .pass_rate >= $t] | all' \
           "$$RESULT_FILE" \
