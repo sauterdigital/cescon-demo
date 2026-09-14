@@ -118,3 +118,8 @@ variable "create_repository" {
 }
 
 
+
+variable "dev_project_id" {
+  type        = string
+  description = "Dev Google Cloud Project ID for resource deployment."
+}

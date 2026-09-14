@@ -16,7 +16,7 @@
 resource "google_bigquery_dataset" "telemetry_dataset" {
   for_each      = local.deploy_project_ids
   project       = each.value
-  dataset_id    = replace("${var.project_name}_telemetry", "-", "_")
+  dataset_id    = replace("${var.project_name}_telemetry_${each.key}", "-", "_")
   friendly_name = "${var.project_name} Telemetry"
   location      = var.region
   description   = "Dataset for GenAI telemetry data stored in GCS"
@@ -28,7 +28,7 @@ resource "google_bigquery_connection" "genai_telemetry_connection" {
   for_each      = local.deploy_project_ids
   project       = each.value
   location      = var.region
-  connection_id = "${var.project_name}-genai-telemetry"
+  connection_id = "${var.project_name}-genai-telemetry-${each.key}"
   friendly_name = "${var.project_name} GenAI Telemetry Connection"
 
   cloud_resource {}
@@ -62,7 +62,7 @@ resource "google_storage_bucket_iam_member" "telemetry_connection_access" {
 # Log sink to route GenAI telemetry logs directly to BigQuery
 resource "google_logging_project_sink" "genai_logs_to_bq" {
   for_each    = local.deploy_project_ids
-  name        = "${var.project_name}-genai-logs"
+  name        = "${var.project_name}-genai-logs-${each.key}"
   project     = each.value
   destination = "bigquery.googleapis.com/projects/${each.value}/datasets/${google_bigquery_dataset.telemetry_dataset[each.key].dataset_id}"
   # Match GenAI completion logs on the event.name label (the log id, and hence

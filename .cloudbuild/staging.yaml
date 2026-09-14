@@ -1,17 +1,3 @@
-# Copyright 2026 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     https://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 steps:
   - name: "gcr.io/cloud-builders/gcloud"
     id: install-dependencies
@@ -36,6 +22,20 @@ steps:
           --service-account=${_APP_SERVICE_ACCOUNT_STAGING} \
           --update-env-vars="OTEL_RESOURCE_ATTRIBUTES=service.version=${COMMIT_SHA},LOGS_BUCKET_NAME=${_LOGS_BUCKET_NAME_STAGING}"
 
+  - name: "gcr.io/cloud-builders/gcloud"
+    id: publish-staging
+    entrypoint: /bin/bash
+    args:
+      - "-c"
+      - |
+        export PATH="$$HOME/.local/bin:$$PATH"
+        uvx google-agents-cli@1.5.0 publish gemini-enterprise \
+          --project ${_STAGING_PROJECT_ID} \
+          --gemini-enterprise-app-id ${_GE_APP_ID} \
+          --deployment-target agent_runtime \
+          --registration-type adk \
+          --display-name "demo-agent (staging)"
+    waitFor: ["deploy-staging"]
 
   - name: gcr.io/cloud-builders/gcloud
     id: fetch-auth-token
@@ -44,6 +44,8 @@ steps:
       - "-c"
       - |
         echo $(gcloud auth print-access-token -q) > auth_token.txt
+    waitFor: ["publish-staging"]
+
   - name: "gcr.io/cloud-builders/gcloud"
     id: load_test
     entrypoint: /bin/bash
@@ -60,7 +62,6 @@ steps:
         --csv=tests/load_test/.results/results \
         --html=tests/load_test/.results/report.html
 
-  # Export Load Test Results to GCS
   - name: gcr.io/cloud-builders/gcloud
     id: export-results-to-gcs
     entrypoint: /bin/bash
@@ -69,12 +70,7 @@ steps:
       - |
         export _TIMESTAMP=$(date +%Y%m%d-%H%M%S)
         gsutil -m cp -r tests/load_test/.results gs://${_LOGS_BUCKET_NAME_STAGING}/load-test-results/results-$${_TIMESTAMP}
-        echo "_________________________________________________________________________"
-        echo "Load test results copied to gs://${_LOGS_BUCKET_NAME_STAGING}/load-test-results/results-$${_TIMESTAMP}"
-        echo "HTTP link: https://console.cloud.google.com/storage/browser/${_LOGS_BUCKET_NAME_STAGING}/load-test-results/results-$${_TIMESTAMP}"
-        echo "_________________________________________________________________________"
 
-  # Trigger Prod Deployment
   - name: gcr.io/cloud-builders/gcloud
     id: trigger-prod-deployment
     entrypoint: gcloud
@@ -91,20 +87,10 @@ steps:
       - "--sha"
       - $COMMIT_SHA
 
-  - name: gcr.io/cloud-builders/gcloud
-    id: echo-view-build-trigger-link
-    entrypoint: /bin/bash
-    args:
-      - "-c"
-      - |
-        echo "_________________________________________________________________________"
-        echo "Production deployment triggered. View progress and / or approve on the Cloud Build Console:"
-        echo "https://console.cloud.google.com/cloud-build/builds;region=$LOCATION"
-        echo "_________________________________________________________________________"
-
 substitutions:
   _STAGING_PROJECT_ID: YOUR_STAGING_PROJECT_ID
-  _REGION: us-east1
+  _REGION: us-central1
+  _GE_APP_ID: "projects/864119621453/locations/global/collections/default_collection/engines/demo-geral_1764956727049"
 
 logsBucket: gs://${PROJECT_ID}-demo-agent-logs/build-logs
 options:
