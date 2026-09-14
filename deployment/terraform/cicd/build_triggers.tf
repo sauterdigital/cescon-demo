@@ -19,6 +19,7 @@ resource "google_cloudbuild_trigger" "pr_checks" {
     "app/**",
     "tests/**",
     "deployment/**",
+    ".cloudbuild/**",
     "uv.lock",
   ]
   include_build_logs = "INCLUDE_BUILD_LOGS_WITH_STATUS"
@@ -48,6 +49,7 @@ resource "google_cloudbuild_trigger" "cd_pipeline" {
     "app/**",
     "tests/**",
     "deployment/**",
+    ".cloudbuild/**",
     "uv.lock"
   ]
   include_build_logs = "INCLUDE_BUILD_LOGS_WITH_STATUS"
@@ -83,6 +85,7 @@ resource "google_cloudbuild_trigger" "dev_pipeline" {
     "app/**",
     "tests/**",
     "deployment/**",
+    ".cloudbuild/**",
     "uv.lock"
   ]
   include_build_logs = "INCLUDE_BUILD_LOGS_WITH_STATUS"
