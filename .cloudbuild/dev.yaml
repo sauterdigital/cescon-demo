@@ -83,4 +83,10 @@ options:
     - 'UV_PYTHON=3.12'
     - 'CI=true'
   substitutionOption: ALLOW_LOOSE
+    - 'GOOGLE_GENAI_USE_VERTEXAI=true'
+    - 'GOOGLE_CLOUD_PROJECT=${PROJECT_ID}'
+    - 'GOOGLE_CLOUD_LOCATION=global'
+    - 'GOOGLE_GENAI_USE_VERTEXAI=true'
+    - 'GOOGLE_CLOUD_PROJECT=${PROJECT_ID}'
+    - 'GOOGLE_CLOUD_LOCATION=global'
   defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET
