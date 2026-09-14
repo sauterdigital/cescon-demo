@@ -20,6 +20,7 @@ steps:
           --project ${_PROD_PROJECT_ID} \
           --region ${_REGION} \
           --service-account=${_APP_SERVICE_ACCOUNT_PROD} \
+          --service-name demo-agent-prod \
           --update-env-vars="OTEL_RESOURCE_ATTRIBUTES=service.version=${COMMIT_SHA},LOGS_BUCKET_NAME=${_LOGS_BUCKET_NAME_PROD}"
 
   - name: "gcr.io/cloud-builders/gcloud"
