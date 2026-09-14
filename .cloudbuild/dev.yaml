@@ -37,6 +37,7 @@ steps:
           --project ${_DEV_PROJECT_ID} \
           --region ${_REGION} \
           --service-account=${_APP_SERVICE_ACCOUNT_DEV} \
+          --agent-identity \
           --service-name demo-agent-dev \
           --update-env-vars="OTEL_RESOURCE_ATTRIBUTES=service.version=${COMMIT_SHA},LOGS_BUCKET_NAME=${_LOGS_BUCKET_NAME_DEV}"
     waitFor: ["eval-gate"]
