@@ -88,3 +88,4 @@ options:
     - 'GOOGLE_CLOUD_LOCATION=global'
   substitutionOption: ALLOW_LOOSE
   defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET
+# teste disparo automatico 1790362304
