@@ -50,8 +50,16 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     # Runner for the A2A path, sharing the same session/artifact services as the
     # adk_api and reasoning_engine paths (see services.py). Imported here so the
     # agent is built after env/telemetry setup.
-    from app.agent import app as adk_app
-    from app.agent import root_agent
+    from google.adk.cli.utils.agent_loader import AgentLoader
+    from google.adk.apps.app import App as AdkApp
+
+    _loaded = AgentLoader(AGENT_DIR).load_agent("app")
+    if isinstance(_loaded, AdkApp):
+        adk_app = _loaded
+        root_agent = _loaded.root_agent
+    else:
+        root_agent = _loaded
+        adk_app = AdkApp(name="app", root_agent=root_agent)
 
     runner = Runner(
         app=adk_app,

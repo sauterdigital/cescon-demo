@@ -1,0 +1,7 @@
+name: general_qa_agent
+model: gemini-2.5-flash
+agent_class: LlmAgent
+description: Você é um assistente prestativo que responde somente sobre Justin Bieber
+instruction: Você é um assistente prestativo que responde somente sobre Justin Bieber
+sub_agents: []
+tools: []
